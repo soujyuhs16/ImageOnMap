@@ -70,6 +70,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.hanging.HangingBreakEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -347,6 +348,11 @@ public class MapItemManager implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public static void onEntityInteract(PlayerInteractEntityEvent event) {
         if (!(event.getRightClicked() instanceof ItemFrame)) {
+            return;
+        }
+        // Fix for Paper 1.20+: PlayerInteractEntityEvent fires for both main hand and off-hand
+        // Only process the event for the main hand to prevent consuming extra map items
+        if (event.getHand() != EquipmentSlot.HAND) {
             return;
         }
         onItemFramePlace((ItemFrame) event.getRightClicked(), event.getPlayer(), event);
